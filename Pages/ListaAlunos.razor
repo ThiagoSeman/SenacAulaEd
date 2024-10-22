@@ -1,0 +1,97 @@
+﻿@page "/listaAlunos"
+@using SenacAulaEd.Models
+<button class="btn btn-primary" @onclick="AddAluno">Add Aluno</button>
+
+<h3>ListaAlunos</h3>
+
+<h5>Nome do aluno</h5>
+<InputText @bind-Value="aluno.Nome" class="form-control" />
+<h5>CPF</h5>
+<InputText @bind-Value="aluno.CPF" class="form-control" />
+<h5>Data de Nascimento</h5>
+<InputDate @bind-Value="aluno.dataNascimento" class="form-control" />
+<h5>Data de Cadastro</h5>
+<InputDate @bind-Value="aluno.dataCad" class="form-control" />
+
+
+@if (alunos == null)
+{
+    <p><em>Loading...</em></p>
+}
+else
+{
+    <table class="table">
+        <thead>
+            <tr>
+                <th>Nome</th>
+                <th>CPF</th>
+                <th>Data cadastro</th>
+                <th>Data Nasc</th>
+            </tr>
+        </thead>
+        <tbody>
+            @foreach (var forecast in alunos)
+            {
+                <tr>
+                    <td>@forecast.Nome</td>
+                    <td>@forecast.CPF</td>
+                    <td>@forecast.dataCad</td>
+                    <td>@forecast.dataNascimento</td>
+                </tr>
+            }
+        </tbody>
+    </table>
+}
+
+
+
+
+@code {
+
+    public Aluno aluno = new();
+
+    public List<Aluno> alunos = new List<Aluno>();
+
+    protected override void OnInitialized()
+    {
+
+        //alunos.Add(aluno);
+    }
+    private void AddAluno()
+    {
+        try
+        {
+            aluno.Contatos = new ();
+            aluno.Enderecos = new ();
+
+            Endereco end = new Endereco
+                {
+                    CEP = "12345-678",
+                    Cidade = "Blumenau",
+                    UF = "SC",
+                    Rua = "Rua 2",
+                    Numero = "223"
+                };
+            Contato contato = new Contato
+                {
+                    Email = "",
+                    Telefone = "",
+                    Celular = "",
+                    Tipo = TipoContato.Outros
+                };
+
+            aluno.Enderecos.Add(end);
+            aluno.Enderecos.Add(end);
+            aluno.Contatos.Add(contato);
+            aluno.Contatos.Add(contato);
+            alunos.Add(aluno);
+
+            aluno = new();
+
+           
+        }
+        catch
+        {            
+        }
+    }
+}

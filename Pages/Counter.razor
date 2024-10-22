@@ -1,0 +1,53 @@
+﻿@page "/counter"
+@using SenacAulaEd.Models
+
+<PageTitle>Counter</PageTitle>
+
+<h1>Counter</h1>
+<p role="status">Current count: @CountAutor</p>
+
+<button class="btn btn-primary" @onclick="IncrementCount">Add autor</button>
+
+<h5>Titulo</h5>
+<InputText @bind-Value="livro.Titulo" class="form-control" />
+
+<h5>Autor</h5>
+<InputText @bind-Value="livro.Autor" class="form-control" />
+
+<h5>Editora</h5>
+<InputText @bind-Value="livro.Editora" class="form-control" />
+<h5>Edição</h5>
+<InputText @bind-Value="livro.Edicao" class="form-control" />
+<h5>Ano</h5>
+<InputNumber TValue="int" @bind-Value="livro.Ano"/>
+<h5>Paginas</h5>
+<InputNumber TValue="int" @bind-Value="livro.Paginas" />
+<h3>Genero</h3>
+<InputText @bind-Value="livro.Genero" class="form-control" />
+<h3>Local</h3>
+<InputText @bind-Value="livro.Local" class="form-control" />
+
+<h5>Quantidade</h5>
+<InputNumber TValue="int" @bind-Value="livro.Qtddisponivel" />
+<h5>Fornecedor</h5>
+<InputText @bind-Value="livro.Fornecedor" class="form-control" />
+<h5>Edição</h5>
+<InputText @bind-Value="livro.Edicao" class="form-control" />
+
+
+@code {
+    List<string> autores { get; set; } = new();
+
+    public Livro livro = new Livro();
+
+    private int CountAutor = 0;
+
+
+
+    private void IncrementCount()
+    {
+        livro.Id = new Guid();
+        CountAutor++;
+        autores.Add("");
+    }
+}
