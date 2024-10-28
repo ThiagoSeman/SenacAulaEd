@@ -14,6 +14,8 @@
 <InputDate @bind-Value="aluno.dataCad" class="form-control" />
 
 
+
+
 @if (alunos == null)
 {
     <p><em>Loading...</em></p>
@@ -44,9 +46,10 @@ else
 }
 
 
-
-
 @code {
+
+    private bool Endinsert { get; set; }
+    private bool Contatonisert { get; set; }
 
     public Aluno aluno = new();
 
@@ -81,13 +84,11 @@ else
                 };
 
             aluno.Enderecos.Add(end);
-            aluno.Enderecos.Add(end);
+
             aluno.Contatos.Add(contato);
-            aluno.Contatos.Add(contato);
+
             alunos.Add(aluno);
-
             aluno = new();
-
            
         }
         catch
