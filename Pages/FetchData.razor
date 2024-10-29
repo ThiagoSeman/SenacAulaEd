@@ -1,47 +1,235 @@
 ﻿@page "/fetchdata"
-@using SenacAulaEd.Data
-@inject WeatherForecastService ForecastService
 
-<PageTitle>Weather forecast</PageTitle>
+@using System.Collections.Generic
+@using SenacAulaEd.Models
 
-<h1>Weather forecast</h1>
+<h3>Gerenciar Alunos</h3>
+<EditForm Model="@novoAluno" OnValidSubmit="AdicionarOuAtualizarAluno">
+    <DataAnnotationsValidator />
+    <ValidationSummary />
 
-<p>This component demonstrates fetching data from a service.</p>
+    <label>Nome:</label>
+    <InputText @bind-Value="novoAluno.Nome" class="form-control" />
 
-@if (forecasts == null)
-{
-    <p><em>Loading...</em></p>
-}
-else
+    <label>Data de Nascimento:</label>
+    <InputDate @bind-Value="novoAluno.dataNascimento" class="form-control" />
+
+    <label>CPF:</label>
+    <InputText @bind-Value="novoAluno.CPF" class="form-control" />
+
+    <label>Login:</label>
+    <InputText @bind-Value="novoAluno.Login" class="form-control" />
+
+    <label>Senha:</label>
+    <InputText @bind-Value="novoAluno.Senha" class="form-control" type="password" />
+
+    <label>Matrícula:</label>
+    <InputText @bind-Value="novoAluno.Matricula" class="form-control" />
+
+    <button type="submit" class="btn btn-primary mt-2">@((alunoEditando != null) ? "Atualizar" : "Adicionar") Aluno</button>
+</EditForm>
+
+<h4>Endereços</h4>
+<EditForm Model="@novoEndereco" OnValidSubmit="AdicionarOuAtualizarEndereco">
+    <label>Rua:</label>
+    <InputText @bind-Value="novoEndereco.Rua" class="form-control" />
+    <label>Número:</label>
+    <InputText @bind-Value="novoEndereco.Numero" class="form-control" />
+    <label>Bairro:</label>
+    <InputText @bind-Value="novoEndereco.Bairro" class="form-control" />
+    <label>Cidade:</label>
+    <InputText @bind-Value="novoEndereco.Cidade" class="form-control" />
+    <label>UF:</label>
+    <InputText @bind-Value="novoEndereco.UF" class="form-control" />
+    <label>CEP:</label>
+    <InputText @bind-Value="novoEndereco.CEP" class="form-control" />
+
+    <button type="submit" class="btn btn-secondary mt-2">@((enderecoEditando != null) ? "Atualizar" : "Adicionar") Endereço</button>
+</EditForm>
+
+<h4>Contatos</h4>
+<EditForm Model="@novoContato" OnValidSubmit="AdicionarOuAtualizarContato">
+    <label>Telefone:</label>
+    <InputText @bind-Value="novoContato.Telefone" class="form-control" />
+    <label>Celular:</label>
+    <InputText @bind-Value="novoContato.Celular" class="form-control" />
+    <label>Email:</label>
+    <InputText @bind-Value="novoContato.Email" class="form-control" />
+    <label>Tipo de Contato:</label>
+    <InputSelect @bind-Value="novoContato.Tipo" class="form-control">
+        @foreach (var tipo in Enum.GetValues(typeof(TipoContato)))
+        {
+            <option value="@tipo">@tipo</option>
+        }
+    </InputSelect>
+    <label>Site:</label>
+    <InputText @bind-Value="novoContato.Site" class="form-control" />
+
+    <button type="submit" class="btn btn-secondary mt-2">@((contatoEditando != null) ? "Atualizar" : "Adicionar") Contato</button>
+</EditForm>
+
+<h3>Lista de Alunos</h3>
+@if (alunos.Any())
 {
     <table class="table">
         <thead>
             <tr>
-                <th>Date</th>
-                <th>Temp. (C)</th>
-                <th>Temp. (F)</th>
-                <th>Summary</th>
+                <th>Nome</th>
+                <th>CPF</th>
+                <th>Data de Cadastro</th>
+                <th>Ações</th>
             </tr>
         </thead>
         <tbody>
-            @foreach (var forecast in forecasts)
+            @foreach (var aluno in alunos)
             {
                 <tr>
-                    <td>@forecast.Date.ToShortDateString()</td>
-                    <td>@forecast.TemperatureC</td>
-                    <td>@forecast.TemperatureF</td>
-                    <td>@forecast.Summary</td>
+                    <td>@aluno.Nome</td>
+                    <td>@aluno.CPF</td>
+                    <td>@aluno.dataCad.ToString("dd/MM/yyyy")</td>
+                    <td>
+                        <button class="btn btn-info" @onclick="() => EditarAluno(aluno)">Editar</button>
+                        <button class="btn btn-danger" @onclick="() => ExcluirAluno(aluno)">Excluir</button>
+                    </td>
                 </tr>
             }
         </tbody>
     </table>
 }
+else
+{
+    <p>Nenhum aluno adicionado ainda.</p>
+}
+
 
 @code {
-    private WeatherForecast[]? forecasts;
+    private Aluno novoAluno = new Aluno {
+                Enderecos = new List<Endereco>(), Contatos = new List<Contato>() };
+    private List<Aluno> alunos = new List<Aluno>();
 
-    protected override async Task OnInitializedAsync()
+    private Endereco novoEndereco = new Endereco();
+    private Contato novoContato = new Contato();
+
+    private Aluno? alunoEditando;
+    private Endereco? enderecoEditando;
+    private Contato? contatoEditando;
+
+    private void AdicionarOuAtualizarAluno()
     {
-        forecasts = await ForecastService.GetForecastAsync(DateOnly.FromDateTime(DateTime.Now));
+        if (alunoEditando == null)
+        {
+            // Adicionar novo aluno
+            novoAluno.Id = Guid.NewGuid();
+            novoAluno.dataCad = DateTime.Now;
+            alunos.Add(novoAluno);
+        }
+        else
+        {
+            // Atualizar aluno existente
+            var alunoExistente = alunos.FirstOrDefault(a => a.Id == alunoEditando.Id);
+            if (alunoExistente != null)
+            {
+                alunoExistente.Nome = novoAluno.Nome;
+                alunoExistente.dataNascimento = novoAluno.dataNascimento;
+                alunoExistente.CPF = novoAluno.CPF;
+                alunoExistente.Login = novoAluno.Login;
+                alunoExistente.Senha = novoAluno.Senha;
+                alunoExistente.Matricula = novoAluno.Matricula;
+            }
+            alunoEditando = null;
+        }
+
+        novoAluno = new Aluno { Enderecos = new List<Endereco>(), Contatos = new List<Contato>() };
+    }
+
+    private void EditarAluno(Aluno aluno)
+    {
+        alunoEditando = aluno;
+        novoAluno = new Aluno
+            {
+                Id = aluno.Id,
+                Nome = aluno.Nome,
+                dataNascimento = aluno.dataNascimento,
+                CPF = aluno.CPF,
+                Login = aluno.Login,
+                Senha = aluno.Senha,
+                Matricula = aluno.Matricula,
+                Enderecos = aluno.Enderecos,
+                Contatos = aluno.Contatos
+            };
+    }
+
+    private void ExcluirAluno(Aluno aluno)
+    {
+        alunos.Remove(aluno);
+    }
+
+    private void AdicionarOuAtualizarEndereco()
+    {
+        if (enderecoEditando == null)
+        {
+            novoEndereco.Id = Guid.NewGuid();
+            novoAluno.Enderecos.Add(novoEndereco);
+        }
+        else
+        {
+            var enderecoExistente = novoAluno.Enderecos.FirstOrDefault(e => e.Id == enderecoEditando.Id);
+            if (enderecoExistente != null)
+            {
+                enderecoExistente.Rua = novoEndereco.Rua;
+                enderecoExistente.Numero = novoEndereco.Numero;
+                enderecoExistente.Bairro = novoEndereco.Bairro;
+                enderecoExistente.Cidade = novoEndereco.Cidade;
+                enderecoExistente.UF = novoEndereco.UF;
+                enderecoExistente.CEP = novoEndereco.CEP;
+            }
+            enderecoEditando = null;
+        }
+        novoEndereco = new Endereco();
+    }
+
+    private void EditarEndereco(Endereco endereco)
+    {
+        enderecoEditando = endereco;
+        novoEndereco = endereco;
+    }
+
+    private void ExcluirEndereco(Endereco endereco)
+    {
+        novoAluno.Enderecos.Remove(endereco);
+    }
+
+    private void AdicionarOuAtualizarContato()
+    {
+        if (contatoEditando == null)
+        {
+            novoContato.Id = Guid.NewGuid();
+            novoAluno.Contatos.Add(novoContato);
+        }
+        else
+        {
+            var contatoExistente = novoAluno.Contatos.FirstOrDefault(c => c.Id == contatoEditando.Id);
+            if (contatoExistente != null)
+            {
+                contatoExistente.Telefone = novoContato.Telefone;
+                contatoExistente.Celular = novoContato.Celular;
+                contatoExistente.Email = novoContato.Email;
+                contatoExistente.Tipo = novoContato.Tipo;
+                contatoExistente.Site = novoContato.Site;
+            }
+            contatoEditando = null;
+        }
+        novoContato = new Contato();
+    }
+
+    private void EditarContato(Contato contato)
+    {
+        contatoEditando = contato;
+        novoContato = contato;
+    }
+
+    private void ExcluirContato(Contato contato)
+    {
+        novoAluno.Contatos.Remove(contato);
     }
 }

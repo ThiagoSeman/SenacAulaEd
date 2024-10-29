@@ -10,8 +10,12 @@
 <InputText @bind-Value="aluno.CPF" class="form-control" />
 <h5>Data de Nascimento</h5>
 <InputDate @bind-Value="aluno.dataNascimento" class="form-control" />
+
+@*
+
 <h5>Data de Cadastro</h5>
 <InputDate @bind-Value="aluno.dataCad" class="form-control" />
+*@
 
 
 
@@ -32,13 +36,15 @@ else
             </tr>
         </thead>
         <tbody>
-            @foreach (var forecast in alunos)
+            @foreach (var AlunoInd in alunos)
             {
                 <tr>
-                    <td>@forecast.Nome</td>
-                    <td>@forecast.CPF</td>
-                    <td>@forecast.dataCad</td>
-                    <td>@forecast.dataNascimento</td>
+                    <td>@AlunoInd.Nome</td>
+                    <td>@AlunoInd.CPF</td>
+                    <td>@AlunoInd.dataCad</td>
+                    <td>@AlunoInd.dataNascimento</td>
+                    <td><button class="btn btn-primary" >Editar</button></td>
+                    <td><button class="btn btn-primary">Deletar</button></td>
                 </tr>
             }
         </tbody>
@@ -60,12 +66,23 @@ else
 
         //alunos.Add(aluno);
     }
+
+    private void EditAluno(Aluno aluno)
+    {
+        
+    }
+    private void DeletAluno(Aluno aluno)
+    {
+
+    }
+
     private void AddAluno()
     {
         try
         {
             aluno.Contatos = new ();
             aluno.Enderecos = new ();
+            aluno.dataCad = DateTime.Now;
 
             Endereco end = new Endereco
                 {
@@ -84,9 +101,7 @@ else
                 };
 
             aluno.Enderecos.Add(end);
-
             aluno.Contatos.Add(contato);
-
             alunos.Add(aluno);
             aluno = new();
            
