@@ -1,4 +1,5 @@
 ﻿@page "/listaAlunos"
+@using SenacAulaEd.Data
 @using SenacAulaEd.Models
 <button class="btn btn-primary" @onclick="AddAluno">Add Aluno</button>
 
@@ -63,6 +64,10 @@ else
 
     protected override void OnInitialized()
     {
+        alunos =  WeatherForecastService.GetAlunosAsync();
+
+
+
 
         //alunos.Add(aluno);
     }

@@ -19,7 +19,7 @@ namespace SenacAulaEd.Data
             }).ToArray());
         }
 
-        public Task<List<Aluno>> GetAlunosAsync()
+        public static List<Aluno> GetAlunosAsync()
         {
 
             List<Aluno> alunos = new List<Aluno>
