@@ -210,7 +210,7 @@ namespace SenacAulaEd.Data
         }
     } 
 };
-            return Task.FromResult(alunos);
+            return alunos;
         }
     }
 }
